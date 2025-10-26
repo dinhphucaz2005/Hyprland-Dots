@@ -45,7 +45,6 @@
   	"battery#forest",
 	"custom/separator#blank_2",
 	"group/audio",
-	"custom/nightlight",
 	],
 
 // Additional / Edited Waybar Modules //

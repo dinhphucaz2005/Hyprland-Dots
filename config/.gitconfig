@@ -1,0 +1,13 @@
+[user]
+	name = phuc
+	email = dinhphucaz52@gmail.com
+[init]
+	defaultBranch = main
+[credential]
+	helper = store
+[core]
+	autocrlf = input
+[url "git-fpt"]
+	insteadOf = git@git.fpt.net
+[url "git@github.com:"]
+	insteadOf = https://github.com/

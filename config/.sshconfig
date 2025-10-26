@@ -1,0 +1,19 @@
+Host mac-mini
+    HostName 192.168.14.47
+    User phuc
+    IdentityFile ~/.ssh/fedora
+Host git-fpt
+    HostName git.fpt.net
+    User git
+    IdentityFile ~/.ssh/fedora
+    ProxyJump mac-mini
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/fedora
+    IdentitiesOnly yes
+Host localhost
+	HostName localhost
+	User git
+    IdentityFile ~/.ssh/fedora
+    IdentitiesOnly yes
