@@ -1,0 +1,192 @@
+diff --git a/packages/flutter_tools/templates/module/android/gradle/build.gradle.tmpl b/packages/flutter_tools/templates/module/android/gradle/build.gradle.tmpl
+index 66f4f1c271d..af163bd6eda 100644
+--- a/packages/flutter_tools/templates/module/android/gradle/build.gradle.tmpl
++++ b/packages/flutter_tools/templates/module/android/gradle/build.gradle.tmpl
+@@ -5,16 +5,20 @@ allprojects {
+         google()
+         mavenCentral()
+     }
++
++    tasks.withType(JavaCompile) {
++        options.compilerArgs << "-Xlint:-options"
++    }
+ }
+ 
+ apply plugin: "com.android.library"
+ apply plugin: "kotlin-android"
+ 
+ android {
+-    namespace = "{{androidIdentifier}}"
+-    compileSdk = {{compileSdkVersion}}
++    namespace = "vn.fpt.fli.fptlife.flutter.fptlife_flutter"
++    compileSdk = 35
+     defaultConfig {
+-        minSdk = {{minSdkVersion}}
+-        targetSdk = {{targetSdkVersion}}
++        minSdk = 21
++        targetSdk = 35
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/packages/flutter_tools/templates/module/android/gradle/gradle.properties.tmpl b/packages/flutter_tools/templates/module/android/gradle/gradle.properties.tmpl
+index f018a61817f..58a239e3b53 100644
+--- a/packages/flutter_tools/templates/module/android/gradle/gradle.properties.tmpl
++++ b/packages/flutter_tools/templates/module/android/gradle/gradle.properties.tmpl
+@@ -1,3 +1,3 @@
+-org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError
++org.gradle.jvmargs=-Xmx2G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError
+ android.useAndroidX=true
+ android.enableJetifier=true
+diff --git a/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/build.gradle.tmpl b/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/build.gradle.tmpl
+index 0589b1dd113..bb29ba8ff20 100644
+--- a/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/build.gradle.tmpl
++++ b/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/build.gradle.tmpl
+@@ -3,20 +3,31 @@ def flutterPluginVersion = "managed"
+ apply plugin: "com.android.application"
+ 
+ android {
+-    namespace = "{{androidIdentifier}}.host"
+-    compileSdk = {{compileSdkVersion}}
++    namespace = "vn.fpt.fli.fptlife.flutter.fptlife_flutter.host"
++    compileSdk = 35
++    ndkVersion = "27.0.12077973"
+ 
+     compileOptions {
+-        sourceCompatibility = JavaVersion.VERSION_11
+-        targetCompatibility = JavaVersion.VERSION_11
++        sourceCompatibility = JavaVersion.VERSION_17
++        targetCompatibility = JavaVersion.VERSION_17
++        coreLibraryDesugaringEnabled = true
++    }
++
++    tasks.withType(JavaCompile) {
++        options.compilerArgs << "-Xlint:-options"
+     }
+ 
+     defaultConfig {
+-        applicationId = "{{androidIdentifier}}.host"
+-        minSdk = {{minSdkVersion}}
+-        targetSdk = {{targetSdkVersion}}
++        applicationId = "vn.fpt.fli.fptlife.flutter.fptlife_flutter.host"
++        minSdk = 24
++        targetSdk = 35
+         versionCode = 1
+         versionName = "1.0"
++        multiDexEnabled = true
++
++        manifestPlaceholders += [
++            'appAuthRedirectScheme': 'fpt-life'
++        ]
+     }
+ 
+     buildTypes {
+@@ -24,17 +35,17 @@ android {
+             initWith debug
+         }
+         release {
+-            // TODO: Add your own signing config for the release build.
+-            // Signing with the debug keys for now, so `flutter run --release` works.
+             signingConfig = signingConfigs.debug
+         }
+     }
+-
+ }
++
+ buildDir = new File(rootProject.projectDir, "../build/host")
++
+ dependencies {
+     implementation(project(":flutter"))
+     implementation(fileTree(dir: "libs", include: ["*.jar"]))
+     implementation("androidx.appcompat:appcompat:1.0.2")
+     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+-}
++    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
++}
+\ No newline at end of file
+diff --git a/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/src/main/AndroidManifest.xml.tmpl b/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/src/main/AndroidManifest.xml.tmpl
+index b7f06a15360..2a3995776a7 100644
+--- a/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/src/main/AndroidManifest.xml.tmpl
++++ b/packages/flutter_tools/templates/module/android/host_app_common/app.tmpl/src/main/AndroidManifest.xml.tmpl
+@@ -1,15 +1,11 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-          package="{{androidIdentifier}}.host">
++          package="vn.fpt.fli.fptlife.flutter.fptlife_flutter.host">
+ 
+-    <!-- The INTERNET permission is required for development. Specifically,
+-         flutter needs it to communicate with the running application
+-         to allow setting breakpoints, to provide hot reload, etc.
+-    -->
+     <uses-permission android:name="android.permission.INTERNET"/>
+ 
+     <application
+-        android:label="{{projectName}}"
++        android:label="fptlife_flutter"
+         android:icon="@mipmap/ic_launcher">
+         <activity
+             android:name=".MainActivity"
+@@ -23,22 +19,24 @@
+                 <action android:name="android.intent.action.MAIN"/>
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
++
++            <intent-filter android:autoVerify="true">
++                <action android:name="android.intent.action.VIEW" />
++                <category android:name="android.intent.category.BROWSABLE" />
++                <data android:scheme="${appAuthRedirectScheme}"
++                      android:host="fptsmarthome.vn"
++                      android:pathPrefix="/auth" />
++            </intent-filter>
+         </activity>
+-        <!-- Don't delete the meta-data below.
+-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+         <meta-data
+             android:name="flutterEmbedding"
+             android:value="2" />
+     </application>
+-    <!-- Required to query activities that can process text, see:
+-         https://developer.android.com/training/package-visibility and
+-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+ 
+-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+     <queries>
+         <intent>
+             <action android:name="android.intent.action.PROCESS_TEXT"/>
+             <data android:mimeType="text/plain"/>
+         </intent>
+     </queries>
+-</manifest>
++</manifest>
+\ No newline at end of file
+diff --git a/packages/flutter_tools/templates/module/android/library_new_embedding/Flutter.tmpl/build.gradle.tmpl b/packages/flutter_tools/templates/module/android/library_new_embedding/Flutter.tmpl/build.gradle.tmpl
+index db36bb23f59..9e99c607c17 100644
+--- a/packages/flutter_tools/templates/module/android/library_new_embedding/Flutter.tmpl/build.gradle.tmpl
++++ b/packages/flutter_tools/templates/module/android/library_new_embedding/Flutter.tmpl/build.gradle.tmpl
+@@ -23,17 +23,21 @@ if (flutterVersionName == null) {
+     flutterVersionName = "1.0"
+ }
+ 
+-group = "{{androidIdentifier}}"
++group = "vn.fpt.fli.fptlife.flutter.fptlife_flutter"
+ version = "1.0"
+ 
+ android {
+-    namespace = "{{androidIdentifier}}"
++    namespace = "vn.fpt.fli.fptlife.flutter.fptlife_flutter"
+     compileSdk = flutter.compileSdkVersion
+-    ndkVersion = flutter.ndkVersion
++    ndkVersion = "27.0.12077973"
+ 
+     compileOptions {
+-        sourceCompatibility = JavaVersion.VERSION_11
+-        targetCompatibility = JavaVersion.VERSION_11
++        sourceCompatibility = JavaVersion.VERSION_17
++        targetCompatibility = JavaVersion.VERSION_17
++    }
++
++    tasks.withType(JavaCompile) {
++        options.compilerArgs << "-Xlint:-options"
+     }
+ 
+     defaultConfig {

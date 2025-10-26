@@ -1126,6 +1126,11 @@ wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
 cat config/.gitconfig > $HOME/.gitconfig
 cat config/.sshconfig > $HOME/.ssh/config
+cat config/.zshrc > $HOME/.zshrc
+
+cat patch/.flutter_post_update.sh > $HOME/.flutter_post_update.sh
+chmod +x $HOME/.flutter_post_update.sh
+cat patch/my_flutter_template.patch > $HOME/my_flutter_template.patch
 
 printf "\n%.0s" {1..2}
 printf "${OK} GREAT! KooL's Hyprland-Dots is now Loaded & Ready !!! "
