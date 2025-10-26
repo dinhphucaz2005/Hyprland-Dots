@@ -1124,6 +1124,9 @@ printf "\n%.0s" {1..1}
 # initialize wallust to avoid config error on hyprland
 wallust run -s $wallpaper 2>&1 | tee -a "$LOG"
 
+cat config/.gitconfig > $HOME/.gitconfig
+cat config/.sshconfig > $HOME/.ssh/config
+
 printf "\n%.0s" {1..2}
 printf "${OK} GREAT! KooL's Hyprland-Dots is now Loaded & Ready !!! "
 printf "\n%.0s" {1..1}
